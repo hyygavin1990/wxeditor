@@ -22,7 +22,7 @@ public class UeditorController {
     @RequestMapping("/upload")
     public String upload(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, FileNotFoundException {
 //        String path = ResourceUtils.getURL("classpath:").getPath().substring(1);
-        String path = "D:\\tools\\wamp\\www\\ue\\";
+        String path = "/tools/wamp/www/ue/";
         return new UeditorActionEnter( request, path ).exec() ;
     }
 }

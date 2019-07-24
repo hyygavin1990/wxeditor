@@ -9,9 +9,14 @@ import com.baidu.ueditor.define.State;
 import com.baidu.ueditor.hunter.FileManager;
 import com.baidu.ueditor.hunter.ImageHunter;
 import com.baidu.ueditor.upload.Uploader;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.springframework.util.ResourceUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -33,11 +38,21 @@ public class UeditorActionEnter extends ActionEnter {
         this.configManager = ConfigManager.getInstance(this.rootPath, this.contextPath, configPath);//自定义
         //重写configManager.getAllConfig()的配置
         //System.out.println("上传路径: "+ this.rootPath + request.getRequestURI().substring( contextPath.length() ));
-        String json=request.getParameter("json");
-        if(json!=null&&json.length()>0&&this.configManager!=null){
-        	this.rewriteConfigManager(new JSONObject(json));
-        }
-    }   
+//        String json=request.getParameter("json");
+		try {
+			File file = ResourceUtils.getFile("classpath:config.json");
+			String json = FileUtils.readFileToString(file);
+			json = json.replaceAll("/\\*(.*)\\*/","");
+
+			if(json!=null&&json.length()>0&&this.configManager!=null){
+				this.rewriteConfigManager(new JSONObject(json));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
     public String exec () {
 		
 		String callbackName = this.request.getParameter("callback");
@@ -113,7 +128,7 @@ public class UeditorActionEnter extends ActionEnter {
 		Iterator<?> keys=json.keys();
 		while(keys.hasNext()){
 			Object key=keys.next();
-			//System.out.println(key.toString()+"========="+json.get(key.toString()));
+//			System.out.println(key.toString()+"========="+json.get(key.toString()));
 			this.configManager.getAllConfig().put(key.toString(), json.get(key.toString()));
 		}
 	}
